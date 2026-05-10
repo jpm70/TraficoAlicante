@@ -502,15 +502,23 @@ const cameras = CAMERAS.filter(c => {
   seen.add(c.url); return true;
 });
 
-let selected = new Set(cameras.slice(0, 8).map((_, i) => i)); // primeras 8 por defecto
+// ── CORS proxy: evita el bloqueo OpaqueResponseBlocking ──
+const PROXY = 'https://corsproxy.io/?url=';
+
+function proxyUrl(rawUrl) {
+  // Quitamos el itok (parámetro de caché del servidor) y añadimos el nuestro
+  const clean = rawUrl.split('?')[0];
+  // Rotamos cada minuto para forzar refresco sin saturar el proxy
+  const tick = Math.floor(Date.now() / 60000);
+  return PROXY + encodeURIComponent(clean + '?_t=' + tick);
+}
+
+let selected = new Set(cameras.slice(0, 6).map((_, i) => i));
 let currentLayout = 2;
+let lightboxUrl = '';
 
 function ts() {
   return new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-}
-
-function cacheBust(url) {
-  return url + '?t=' + Date.now();
 }
 
 function buildSidebar() {
@@ -555,17 +563,25 @@ function buildGrid() {
   active.forEach(cam => {
     const card = document.createElement('div');
     card.className = 'cam-card';
+    const imgSrc = proxyUrl(cam.url);
     card.innerHTML = `
-      <div class="cam-card-img" onclick="openLightbox('${cam.url}','${cam.name.replace(/'/g,"\\'")}')">
-        <img src="${cacheBust(cam.url)}" alt="${cam.name}" loading="lazy" onerror="this.style.opacity='.2'">
+      <div class="cam-card-img">
+        <img src="${imgSrc}" alt="${cam.name}" loading="lazy"
+             onerror="this.parentElement.querySelector('.err-label').style.display='flex'">
         <div class="overlay"></div>
         <span class="expand-hint">↗ ampliar</span>
+        <div class="err-label" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;flex-direction:column;gap:.3rem;color:#475569;font-size:.7rem;font-family:'DM Mono',monospace;">
+          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M15 10l-4 4m0-4l4 4"/><circle cx="12" cy="12" r="9"/></svg>
+          Sin señal
+        </div>
       </div>
       <div class="cam-card-body">
         <span class="cam-card-name">${cam.name}</span>
         <span class="cam-ts">${ts()}</span>
       </div>
     `;
+    // Lightbox al hacer clic en la imagen
+    card.querySelector('.cam-card-img').addEventListener('click', () => openLightbox(cam.url, cam.name));
     grid.appendChild(card);
   });
 }
@@ -598,17 +614,26 @@ function refreshAll() {
 }
 
 function openLightbox(url, name) {
-  document.getElementById('lightbox-img').src = cacheBust(url);
+  lightboxUrl = url;
+  document.getElementById('lightbox-img').src = proxyUrl(url);
   document.getElementById('lightbox-name').textContent = name;
   document.getElementById('lightbox').classList.add('open');
 }
+
 function closeLightbox(e) {
-  if (!e || e.target === document.getElementById('lightbox') || e.currentTarget.id === 'lightbox-close') {
+  // Cerrar si: clic en fondo oscuro, botón cerrar, o sin argumento
+  if (!e || e.target === document.getElementById('lightbox')) {
     document.getElementById('lightbox').classList.remove('open');
   }
 }
 
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox({ target: document.getElementById('lightbox') }); });
+document.getElementById('lightbox-close').addEventListener('click', () => {
+  document.getElementById('lightbox').classList.remove('open');
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('open');
+});
 
 // Auto-refresh cada 60 segundos
 setInterval(() => buildGrid(), 60000);
