@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- CLAVE: sin referrer el servidor de Alicante no bloquea las imágenes -->
+<meta name="referrer" content="no-referrer">
 <title>Alicante Tráfico · Cámaras en vivo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
@@ -18,121 +20,137 @@
     --text: #e2e8f0;
     --text-dim: #64748b;
     --text-muted: #334155;
-    --card-h: 200px;
+    --card-h: 210px;
   }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100vh; overflow-x: hidden; }
 
-  /* HEADER */
+  /* ── HEADER ── */
   header {
     position: sticky; top: 0; z-index: 100;
-    background: rgba(10,12,16,0.95); backdrop-filter: blur(12px);
+    background: rgba(10,12,16,0.96); backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
-    padding: 0 1.5rem; display: flex; align-items: center; gap: 1rem; height: 56px;
+    padding: 0 1.5rem; display: flex; align-items: center; gap: 1rem; height: 58px;
   }
   .logo { display: flex; align-items: center; gap: .6rem; font-size: 1rem; font-weight: 800; letter-spacing: -.02em; white-space: nowrap; }
   .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); animation: blink 2s infinite; }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
-  .header-badge { font-family: 'DM Mono', monospace; font-size: .65rem; color: var(--text-dim); border: 1px solid var(--border); padding: .15rem .5rem; border-radius: 4px; }
+  .header-badge { font-family: 'DM Mono', monospace; font-size: .65rem; color: var(--text-dim); border: 1px solid var(--border); padding: .15rem .5rem; border-radius: 4px; white-space: nowrap; }
   .header-right { margin-left: auto; display: flex; align-items: center; gap: .75rem; }
-  #refresh-btn {
-    background: var(--surface2); border: 1px solid var(--border); color: var(--text);
-    font-family: 'Syne', sans-serif; font-size: .75rem; font-weight: 700;
-    padding: .4rem .85rem; border-radius: 6px; cursor: pointer;
-    display: flex; align-items: center; gap: .4rem; transition: border-color .2s;
-  }
+  .live-pill { font-family: 'DM Mono', monospace; font-size: .65rem; background: rgba(34,197,94,.12); color: var(--green); border: 1px solid rgba(34,197,94,.25); padding: .2rem .6rem; border-radius: 99px; display: flex; align-items: center; gap: .35rem; }
+  .live-pill::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--green); box-shadow:0 0 6px var(--green); animation:blink 1.5s infinite; }
+  #refresh-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-family: 'Syne', sans-serif; font-size: .75rem; font-weight: 700; padding: .4rem .85rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: .4rem; transition: border-color .2s; white-space: nowrap; }
   #refresh-btn:hover { border-color: var(--accent); }
   #refresh-btn.spinning svg { animation: spin .6s linear; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .live-pill {
-    font-family: 'DM Mono', monospace; font-size: .65rem;
-    background: rgba(34,197,94,.12); color: var(--green);
-    border: 1px solid rgba(34,197,94,.25); padding: .2rem .6rem; border-radius: 99px;
-    display: flex; align-items: center; gap: .35rem;
+
+  /* ── LAYOUT ── */
+  .app { display: flex; height: calc(100vh - 58px); }
+
+  /* ── SIDEBAR ── */
+  aside { width: 280px; min-width: 280px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+
+  .sidebar-section { padding: 1rem; border-bottom: 1px solid var(--border); }
+  .sidebar-title { font-size: .65rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); margin-bottom: .6rem; }
+
+  /* Selector de rutas */
+  #selectorRuta {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--text); font-family: 'Syne', sans-serif;
+    font-size: .78rem; font-weight: 600; padding: .55rem .75rem;
+    outline: none; cursor: pointer; transition: border-color .2s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right .75rem center;
+    padding-right: 2rem;
   }
-  .live-pill::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--green); box-shadow:0 0 6px var(--green); animation:blink 1.5s infinite; }
+  #selectorRuta:focus { border-color: var(--accent); }
+  #selectorRuta option { background: #1a1f2e; }
 
-  /* LAYOUT */
-  .app { display: flex; height: calc(100vh - 56px); }
-
-  /* SIDEBAR */
-  aside { width: 270px; min-width: 270px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
-  .sidebar-head { padding: 1rem; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: .6rem; }
-  .sidebar-title { font-size: .65rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
-  #search { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: .5rem .75rem; color: var(--text); font-family: 'DM Mono', monospace; font-size: .75rem; width: 100%; outline: none; transition: border-color .2s; }
+  /* Buscador cámara individual */
+  #search { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: .5rem .75rem; color: var(--text); font-family: 'DM Mono', monospace; font-size: .75rem; width: 100%; outline: none; transition: border-color .2s; margin-top: .6rem; }
   #search::placeholder { color: var(--text-muted); }
   #search:focus { border-color: var(--accent); }
+
+  /* Lista de cámaras */
   .cam-list { flex: 1; overflow-y: auto; padding: .5rem; }
   .cam-list::-webkit-scrollbar { width: 4px; }
   .cam-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-  .cam-item { display: flex; align-items: center; gap: .6rem; padding: .6rem .75rem; border-radius: 6px; cursor: pointer; transition: background .15s; user-select: none; }
+
+  .cam-item { display: flex; align-items: center; gap: .6rem; padding: .55rem .75rem; border-radius: 6px; cursor: pointer; transition: background .15s; user-select: none; }
   .cam-item:hover { background: var(--surface2); }
   .cam-item.active { background: rgba(0,212,255,.08); }
   .cam-check { width: 16px; height: 16px; min-width: 16px; border: 1.5px solid var(--border); border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: all .15s; }
   .cam-item.active .cam-check { background: var(--accent); border-color: var(--accent); }
   .cam-check-icon { display: none; }
   .cam-item.active .cam-check-icon { display: block; }
-  .cam-label { font-size: .8rem; line-height: 1.3; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cam-label { font-size: .78rem; line-height: 1.3; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
   .sidebar-footer { padding: .75rem 1rem; border-top: 1px solid var(--border); display: flex; gap: .5rem; }
   .sidebar-footer button { flex: 1; background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim); font-family: 'Syne', sans-serif; font-size: .7rem; font-weight: 700; padding: .45rem; border-radius: 6px; cursor: pointer; transition: all .15s; }
   .sidebar-footer button:hover { color: var(--text); border-color: var(--accent); }
 
-  /* MAIN */
+  /* ── MAIN ── */
   main { flex: 1; overflow-y: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
+
   .top-bar { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
   .count-badge { font-family: 'DM Mono', monospace; font-size: .7rem; color: var(--text-dim); }
   .count-badge span { color: var(--accent); font-weight: 500; }
+  #countdown { font-family: 'DM Mono', monospace; font-size: .65rem; color: var(--text-muted); }
+
   .layout-btns { margin-left: auto; display: flex; gap: .4rem; }
   .layout-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text-dim); padding: .4rem .5rem; border-radius: 6px; cursor: pointer; transition: all .15s; display: flex; align-items: center; }
   .layout-btn:hover, .layout-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,.06); }
 
-  /* GRID */
+  /* ── GRID ── */
   #grid { display: grid; gap: .85rem; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); }
   #grid.layout-1 { grid-template-columns: 1fr; }
   #grid.layout-2 { grid-template-columns: repeat(2,1fr); }
   #grid.layout-3 { grid-template-columns: repeat(3,1fr); }
 
-  /* CARD */
+  /* ── CARD ── */
   .cam-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; transition: border-color .2s, transform .15s; animation: fadeIn .3s ease; }
   @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
   .cam-card:hover { border-color: rgba(0,212,255,.35); transform: translateY(-1px); }
 
-  /* iframe wraper — solución definitiva al CORS */
-  .cam-frame-wrap { position: relative; height: var(--card-h); background: #060810; overflow: hidden; cursor: pointer; }
-  .cam-frame-wrap iframe { width: 100%; height: 100%; border: none; pointer-events: none; display: block; }
-  .frame-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.55) 0%, transparent 55%); display: flex; align-items: flex-start; justify-content: flex-end; padding: .4rem; }
-  .expand-btn { background: rgba(0,0,0,.55); border: 1px solid rgba(255,255,255,.12); border-radius: 4px; padding: .2rem .4rem; font-size: .6rem; font-family: 'DM Mono', monospace; color: rgba(255,255,255,.55); opacity: 0; transition: opacity .2s; }
-  .cam-card:hover .expand-btn { opacity: 1; }
+  .cam-img-wrap { position: relative; height: var(--card-h); background: #060810; overflow: hidden; cursor: pointer; }
+  .cam-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s; }
+  .cam-card:hover .cam-img-wrap img { transform: scale(1.02); }
+  .img-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.55) 0%, transparent 55%); pointer-events: none; }
+  .expand-hint { position: absolute; top: .5rem; right: .5rem; background: rgba(0,0,0,.55); border: 1px solid rgba(255,255,255,.12); border-radius: 4px; padding: .2rem .4rem; font-size: .6rem; font-family: 'DM Mono', monospace; color: rgba(255,255,255,.55); opacity: 0; transition: opacity .2s; pointer-events: none; }
+  .cam-card:hover .expand-hint { opacity: 1; }
 
   .cam-card-body { padding: .6rem .75rem; display: flex; align-items: center; gap: .5rem; }
   .cam-card-name { font-size: .78rem; font-weight: 700; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .cam-ts { font-family: 'DM Mono', monospace; font-size: .6rem; color: var(--text-dim); white-space: nowrap; }
 
-  /* EMPTY */
+  /* ── EMPTY ── */
   .empty { grid-column: 1/-1; text-align: center; padding: 4rem 2rem; color: var(--text-muted); }
   .empty h3 { font-size: 1.1rem; margin-bottom: .5rem; color: var(--text-dim); }
   .empty p { font-size: .8rem; font-family: 'DM Mono', monospace; }
 
-  /* LIGHTBOX */
+  /* ── LIGHTBOX ── */
   #lightbox { display: none; position: fixed; inset: 0; z-index: 999; background: rgba(0,0,0,.88); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 1rem; }
   #lightbox.open { display: flex; }
-  #lightbox-inner { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; max-width: 900px; width: 100%; animation: lbIn .2s ease; display: flex; flex-direction: column; }
+  #lightbox-inner { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; max-width: 960px; width: 100%; animation: lbIn .2s ease; }
   @keyframes lbIn { from{opacity:0;transform:scale(.95)} to{opacity:1;transform:scale(1)} }
-  #lightbox-frame { width: 100%; height: 65vh; border: none; background: #060810; display: block; }
+  #lightbox-img { width: 100%; max-height: 72vh; object-fit: contain; display: block; background: #060810; }
   #lightbox-bar { padding: .75rem 1rem; display: flex; align-items: center; gap: .75rem; border-top: 1px solid var(--border); }
   #lightbox-name { font-size: .9rem; font-weight: 700; flex: 1; }
   #lightbox-close { background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-family: 'Syne', sans-serif; font-size: .75rem; font-weight: 700; padding: .4rem .8rem; border-radius: 6px; cursor: pointer; transition: border-color .15s; }
   #lightbox-close:hover { border-color: var(--accent2); color: var(--accent2); }
 
-  /* MOBILE */
-  @media (max-width: 700px) {
-    :root { --card-h: 170px; }
+  /* ── MOBILE ── */
+  @media (max-width: 720px) {
+    :root { --card-h: 180px; }
     .app { flex-direction: column; height: auto; }
-    aside { width: 100%; min-width: 0; max-height: 230px; border-right: none; border-bottom: 1px solid var(--border); }
+    aside { width: 100%; min-width: 0; max-height: none; border-right: none; border-bottom: 1px solid var(--border); }
+    .cam-list { max-height: 160px; }
     main { padding: .75rem; }
     #grid, #grid.layout-2, #grid.layout-3 { grid-template-columns: 1fr; }
     .layout-btns { display: none; }
-    #lightbox-frame { height: 50vw; min-height: 200px; }
+    #lightbox-img { max-height: 55vw; }
   }
 </style>
 </head>
@@ -140,14 +158,13 @@
 
 <header>
   <div class="logo"><div class="logo-dot"></div>ALICANTE TRÁFICO</div>
-  <span class="header-badge">CÁMARAS · TIEMPO REAL</span>
+  <span class="header-badge">TIEMPO REAL</span>
   <div class="header-right">
     <span class="live-pill">EN VIVO</span>
     <button id="refresh-btn">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-        <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
-        <path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
-        <path d="M8 16H3v5"/>
+        <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/>
+        <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>
       </svg>
       Actualizar
     </button>
@@ -156,11 +173,27 @@
 
 <div class="app">
   <aside>
-    <div class="sidebar-head">
-      <div class="sidebar-title">Cámaras disponibles</div>
+    <!-- Rutas rápidas -->
+    <div class="sidebar-section">
+      <div class="sidebar-title">Ruta rápida</div>
+      <select id="selectorRuta">
+        <option value="">— Selecciona una ruta —</option>
+        <option value="playa_a_centro">🏖 Playa San Juan → Centro</option>
+        <option value="centro_a_universidad">🎓 Centro → Vía Parque (Universidad)</option>
+        <option value="acceso_norte">🛣 Acceso Norte (Av. Denia)</option>
+        <option value="centro_ciudad">🏙 Centro ciudad (Luceros / Maisonnave)</option>
+        <option value="puerto_centro">⚓ Puerto → Centro</option>
+        <option value="salida_norte">🚗 Salida ciudad Norte</option>
+      </select>
+    </div>
+
+    <!-- Búsqueda + lista individual -->
+    <div class="sidebar-section" style="border-bottom:none; padding-bottom:.5rem;">
+      <div class="sidebar-title">O elige cámaras sueltas</div>
       <input id="search" type="text" placeholder="Buscar cámara…">
     </div>
     <div class="cam-list" id="cam-list"></div>
+
     <div class="sidebar-footer">
       <button id="btn-all">Todas</button>
       <button id="btn-none">Ninguna</button>
@@ -170,6 +203,7 @@
   <main>
     <div class="top-bar">
       <div class="count-badge">Mostrando <span id="count">0</span> cámaras</div>
+      <span id="countdown"></span>
       <div class="layout-btns">
         <button class="layout-btn" data-layout="1" title="1 columna">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="1" width="12" height="5" rx="1"/><rect x="1" y="8" width="12" height="5" rx="1"/></svg>
@@ -188,7 +222,7 @@
 
 <div id="lightbox">
   <div id="lightbox-inner">
-    <iframe id="lightbox-frame" src="about:blank" scrolling="no" title="Cámara ampliada"></iframe>
+    <img id="lightbox-img" src="" alt="">
     <div id="lightbox-bar">
       <span id="lightbox-name"></span>
       <button id="lightbox-close">✕ Cerrar</button>
@@ -197,78 +231,86 @@
 </div>
 
 <script>
-const CAMERAS = [
-  { name: "Avda. Vicente Hipólito (C23F2)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C23F2.jpg" },
-  { name: "Avda. Costablanca Norte (C44M2)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C44M2.jpg" },
-  { name: "Avda. Naciones (C44M1)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C44M1.jpg" },
-  { name: "Avda. de las Naciones (C38F2)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C38F2.jpg" },
-  { name: "Avda. De Oviedo (C38F3)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C38F3.jpg" },
-  { name: "Caja de Ahorros - Playas (C42F2)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C42F2.jpg" },
-  { name: "Villajoyosa - Sol Naciente (C46M1)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C46M1.jpg" },
-  { name: "Villajoyosa - Pl. Isleta (C46M2)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C46M2.jpg" },
-  { name: "Avda. Pintor Pérez Gil (C38F4)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C38F4.jpg" },
-  { name: "Caja de Ahorros - Av. Denia (C42F1)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C42F1.jpg" },
-  { name: "Avda. Costablanca Sur (C05M1)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C05M1.jpg" },
-  { name: "Avda. Condomina (C05F2)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C05F2.jpg" },
-  { name: "C/ Caja de Ahorros (C23M1)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C23M1.jpg" },
-  { name: "Av. Denia - Av. Villajoyosa (C30F2)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C30F2.jpg" },
-  { name: "Avda. Juan Bautista Lafora (C30F3)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C30F3.jpg" },
-  { name: "Entrada Ciudad (C26F1)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C26F1.jpg" },
-  { name: "Salida Ciudad (C26F4)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C26F4.jpg" },
-  { name: "Avda. de Denia (C04F5)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C04F5.jpg" },
-  { name: "Avda. Denia (C14M4)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C14M4.jpg" },
-  { name: "Avda. Denia (C30M4)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C30M4.jpg" },
-  { name: "Av. A. Ramos Carratalá (C04F3)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C04F3.jpg" },
-  { name: "Avda. Padre Esplá (C06M3)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C06M3.jpg" },
-  { name: "Avda. Pintor Xavier Soler (C14M2)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C14M2.jpg" },
-  { name: "Avda. Denia - Acceso A-70 (C49M3)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C49M3.jpg" },
-  { name: "Av. Denia - Torres de la Huerta (C49M2)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C49M2.jpg" },
-  { name: "Avda. de Denia - Santa Faz (C48M1)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C48M1.jpg" },
-  { name: "Av. Mártires de la Libertad - Pta. del Mar (C03M2)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C03M2.jpg" },
-  { name: "Salida Puerto - Pta. del Mar (C03M4)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C03M4.jpg" },
-  { name: "Av. Juan Bautista Lafora - Pta. del Mar (C03M3)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C03M3.jpg" },
-  { name: "C/ Isla de Corfú (C41F4)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C41F4.jpg" },
-  { name: "Vía Parque - Jaime I (C37F3)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C37F3.jpg" },
-  { name: "Avda. Universidad (C37F4)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C37F4.jpg" },
-  { name: "Avda. Novelda (C25M4)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C25M4.jpg" },
-  { name: "Avda. A. Ramos Carratalá (C51M2)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C51M2.jpg" },
-  { name: "Av. Novelda - San Vicente (C34F2)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C34F2.jpg" },
-  { name: "Avda. Aguilera - Pl. Estrella (C01F4)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C01F4.jpg" },
-  { name: "Oscar Esplá (C02F5)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C02F5.jpg" },
-  { name: "B. P. Galdós - Gral. Marvá (C36F4)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C36F4.jpg" },
-  { name: "Avda. Jijona - Pl. España (C09M4)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C09M4.jpg" },
-  { name: "Salamanca - Estación (C35F4)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C35F4.jpg" },
-  { name: "Rambla de Méndez Núñez (C16F2)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C16F2.jpg" },
-  { name: "Avda. Maisonnave - Pl. Estrella (C01F2)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C01F2.jpg" },
-  { name: "Conde Lumiares - Av. Alcoy (C07F2)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C07F2.jpg" },
-  { name: "Avda. de Alcoy - Pl. España (C09M3)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C09M3.jpg" },
-  { name: "Avda. Alfonso X El Sabio (C15F2)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C15F2.jpg" },
-  { name: "Avda. Dr. Gadea (C17F2)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C17F2.jpg" },
-  { name: "C/ Reyes Católicos (C17F3)", url: "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C17F3.jpg" },
-];
+// ─────────────────────────────────────────────
+// DATOS: todas las cámaras con su ?itok= original
+// (el servidor Drupal valida ese token; sin él bloquea)
+// ─────────────────────────────────────────────
+const TODAS = {
+  "Avda. Vicente Hipólito 1":       "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C23F2.jpg?itok=nepIAtOg",
+  "Avda. Costablanca 1":            "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C44M2.jpg?itok=W9g50DjL",
+  "Avda. Naciones":                 "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C44M1.jpg?itok=vGm55tNu",
+  "Avda. de las Naciones":          "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C38F2.jpg?itok=U9YORs9e",
+  "Avda. De Oviedo":                "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C38F3.jpg?itok=gOUn6Lo4",
+  "Caja de Ahorros - Playas":       "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C42F2.jpg?itok=XfTmE5Hz",
+  "Villajoyosa - Sol Naciente":     "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C46M1.jpg?itok=YQoeb2Du",
+  "Villajoyosa - Pl. Isleta":       "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C46M2.jpg?itok=N8ld6sCH",
+  "Avda. Vicente Hipólito 2":       "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C38F5.jpg?itok=YI7t6VKF",
+  "Avda. Pintor Pérez Gil":         "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C38F4.jpg?itok=vYzqV4tR",
+  "Caja de Ahorros - Av. Denia":    "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C42F1.jpg?itok=oeMlifAA",
+  "Avda. Costablanca 2":            "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C05M1.jpg?itok=dCzcU4gm",
+  "Avda. Condomina":                "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C05F2.jpg?itok=CR2iiMAu",
+  "C/ Caja de Ahorros":             "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C23M1.jpg?itok=rrjwrwai",
+  "Av. Denia - Av. Villajoyosa":    "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C30F2.jpg?itok=7cuPqaGB",
+  "Avda. Juan Bautista Lafora":     "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C30F3.jpg?itok=Zw9owqJS",
+  "Entrada Ciudad":                 "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C26F1.jpg?itok=cTd9qFxW",
+  "Salida Ciudad":                  "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C26F4.jpg?itok=ADbf32qa",
+  "Avda. de Denia 1":               "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C04F5.jpg?itok=PcYuQWfJ",
+  "Avda. Denia 2":                  "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C14M4.jpg?itok=vVPQ5iM8",
+  "Avda. Denia 3":                  "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C30M4.jpg?itok=owqHBUSg",
+  "Av. A. Ramos Carratalá":         "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C04F3.jpg?itok=kfZg2JBp",
+  "Avda. Padre Esplá":              "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C06M3.jpg?itok=G2KMEudZ",
+  "Avda. Pintor Xavier Soler":      "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C14M2.jpg?itok=ZR5d3AgV",
+  "Avda. Denia - Acceso A-70":      "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C49M3.jpg?itok=JMBk5Gjl",
+  "Av. Denia - Torres de la Huerta":"https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C49M2.jpg?itok=x3Bm8RRQ",
+  "Avda. de Denia - Santa Faz":     "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C48M1.jpg?itok=wK6rhew2",
+  "Av. Mártires de la Libertad":    "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C03M2.jpg?itok=K8SAt93P",
+  "Salida Puerto":                  "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C03M4.jpg?itok=oS2tpsEr",
+  "Av. Juan Bautista Lafora 2":     "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C03M3.jpg?itok=zUlMYPpA",
+  "C/ Isla de Corfú":               "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C41F4.jpg?itok=GzmvHNvC",
+  "Vía Parque - Jaime I":           "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C37F3.jpg?itok=_PnWFp8X",
+  "Avda. Universidad":              "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C37F4.jpg?itok=5hfmDvX9",
+  "Avda. Novelda":                  "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C25M4.jpg?itok=vPOv8212",
+  "Avda. A. Ramos Carratalá 2":     "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C51M2.jpg?itok=VbamDPG2",
+  "Av. Novelda - San Vicente":      "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C34F2.jpg?itok=jZ1qau6n",
+  "Avda. Aguilera":                 "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C01F4.jpg?itok=5bER9ZLG",
+  "Oscar Esplá":                    "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C02F5.jpg?itok=ic65iwAY",
+  "B. P. Galdós - Gral. Marvá":    "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C36F4.jpg?itok=5H7SXW0F",
+  "Avda. Jijona":                   "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C09M4.jpg?itok=BkuxrdGk",
+  "Salamanca - Estación":           "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C35F4.jpg?itok=MpgZFZVp",
+  "Rambla de Méndez Núñez":         "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C16F2.jpg?itok=VdNERR6t",
+  "Avda. Maisonnave":               "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C01F2.jpg?itok=DEuQ1vIh",
+  "Conde Lumiares - Av. Alcoy":     "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C07F2.jpg?itok=WU4T8amJ",
+  "Avda. de Alcoy":                 "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C09M3.jpg?itok=ENwJ4U2h",
+  "Avda. Alfonso X El Sabio":       "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C15F2.jpg?itok=dMvADY21",
+  "Avda. Dr. Gadea":                "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C17F2.jpg?itok=FOPbckH4",
+  "C/ Reyes Católicos":             "https://movilidad.alicante.es/sites/default/files/styles/upload_fotograma_big/public/camara/C17F3.jpg?itok=SQcRlgBo",
+};
 
-// Deduplicar
-const seen = new Set();
-const cameras = CAMERAS.filter(c => { if (seen.has(c.url)) return false; seen.add(c.url); return true; });
+// Rutas predefinidas
+const RUTAS = {
+  playa_a_centro:       ["Avda. Costablanca 1","Villajoyosa - Sol Naciente","Av. Denia - Av. Villajoyosa","Avda. Juan Bautista Lafora"],
+  centro_a_universidad: ["Avda. Alfonso X El Sabio","B. P. Galdós - Gral. Marvá","Vía Parque - Jaime I","Avda. Universidad"],
+  acceso_norte:         ["Avda. de Denia - Santa Faz","Av. Denia - Torres de la Huerta","Avda. Denia - Acceso A-70","Avda. de Denia 1"],
+  centro_ciudad:        ["Avda. Aguilera","Avda. Maisonnave","Avda. Alfonso X El Sabio","Rambla de Méndez Núñez"],
+  puerto_centro:        ["Salida Puerto","Av. Mártires de la Libertad","Av. Juan Bautista Lafora 2","Avda. Dr. Gadea"],
+  salida_norte:         ["Salida Ciudad","Entrada Ciudad","Avda. de Denia 1","Avda. Denia - Acceso A-70"],
+};
 
-let selected = new Set(cameras.slice(0, 6).map((_, i) => i));
+// Lista de cámaras como array
+const cameras = Object.entries(TODAS).map(([name, url]) => ({ name, url }));
+
+// Estado
+let selected = new Set(); // vacío al inicio
 let currentLayout = 2;
+let refreshSecs = 15;
+let countdownTimer, refreshTimer;
 
-// URL con cache-bust por minuto
+// URL con cache-bust (añadimos &t= porque la URL ya tiene ?itok=)
 function liveUrl(url) {
-  return url.split('?')[0] + '?_t=' + Math.floor(Date.now() / 60000);
+  return url + '&t=' + Date.now();
 }
 
-// srcdoc: mini página HTML que carga la imagen. Esto bypasea CORS porque
-// el contenido es local (blob / srcdoc) y la imagen se carga como recurso del documento hijo.
-function makeSrcdoc(url, fit) {
-  return `<!DOCTYPE html><html><head><style>
-    *{margin:0;padding:0}
-    body{background:#060810;width:100%;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center}
-    img{width:100%;height:100%;object-fit:${fit || 'cover'};display:block}
-  </style></head><body><img src="${liveUrl(url)}"></body></html>`;
-}
-
+// ── SIDEBAR ──
 function buildSidebar() {
   const list = document.getElementById('cam-list');
   list.innerHTML = '';
@@ -282,7 +324,7 @@ function buildSidebar() {
         <svg class="cam-check-icon" width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="#0a0c10" stroke-width="2.5" stroke-linecap="round"><polyline points="2,6 5,9 10,3"/></svg>
       </div>
       <span class="cam-label" title="${cam.name}">${cam.name}</span>`;
-    div.addEventListener('click', () => toggleCam(i));
+    div.addEventListener('click', () => { toggleCam(i); document.getElementById('selectorRuta').value = ''; });
     list.appendChild(div);
   });
 }
@@ -292,37 +334,41 @@ function toggleCam(i) {
   buildSidebar(); buildGrid();
 }
 
+// ── GRID ──
 function buildGrid() {
   const grid = document.getElementById('grid');
   grid.innerHTML = '';
-  const active = cameras.map((c, i) => ({...c, i})).filter(c => selected.has(c.i));
+  const active = cameras.map((c,i) => ({...c,i})).filter(c => selected.has(c.i));
   document.getElementById('count').textContent = active.length;
 
   if (!active.length) {
-    grid.innerHTML = `<div class="empty"><h3>Sin cámaras seleccionadas</h3><p>Elige una o varias cámaras en el panel izquierdo</p></div>`;
+    grid.innerHTML = `<div class="empty"><h3>Sin cámaras activas</h3><p>Elige una ruta o selecciona cámaras en el panel izquierdo</p></div>`;
     return;
   }
 
   const ts = new Date().toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
-
   active.forEach(cam => {
     const card = document.createElement('div');
     card.className = 'cam-card';
 
     const wrap = document.createElement('div');
-    wrap.className = 'cam-frame-wrap';
+    wrap.className = 'cam-img-wrap';
 
-    const iframe = document.createElement('iframe');
-    iframe.scrolling = 'no';
-    iframe.title = cam.name;
-    iframe.srcdoc = makeSrcdoc(cam.url, 'cover');
+    const img = document.createElement('img');
+    img.src = liveUrl(cam.url);
+    img.alt = cam.name;
+    img.loading = 'lazy';
+    img.onerror = function() { this.style.opacity = '.15'; };
 
     const overlay = document.createElement('div');
-    overlay.className = 'frame-overlay';
-    overlay.innerHTML = `<span class="expand-btn">↗ ampliar</span>`;
+    overlay.className = 'img-overlay';
+    const hint = document.createElement('span');
+    hint.className = 'expand-hint';
+    hint.textContent = '↗ ampliar';
 
-    wrap.appendChild(iframe);
+    wrap.appendChild(img);
     wrap.appendChild(overlay);
+    wrap.appendChild(hint);
     wrap.addEventListener('click', () => openLightbox(cam.url, cam.name));
 
     const body = document.createElement('div');
@@ -335,48 +381,78 @@ function buildGrid() {
   });
 }
 
-function openLightbox(url, name) {
-  document.getElementById('lightbox-name').textContent = name;
-  document.getElementById('lightbox-frame').srcdoc = makeSrcdoc(url, 'contain');
-  document.getElementById('lightbox').classList.add('open');
-}
-
-// Botones
-document.getElementById('refresh-btn').addEventListener('click', () => {
-  const btn = document.getElementById('refresh-btn');
-  btn.classList.add('spinning');
+// ── RUTAS ──
+document.getElementById('selectorRuta').addEventListener('change', function() {
+  const val = this.value;
+  if (!val) return;
+  selected.clear();
+  RUTAS[val].forEach(nombre => {
+    const idx = cameras.findIndex(c => c.name === nombre);
+    if (idx !== -1) selected.add(idx);
+  });
+  buildSidebar();
   buildGrid();
-  setTimeout(() => btn.classList.remove('spinning'), 650);
+  resetCountdown();
 });
-document.getElementById('btn-all').addEventListener('click', () => { cameras.forEach((_,i) => selected.add(i)); buildSidebar(); buildGrid(); });
-document.getElementById('btn-none').addEventListener('click', () => { selected.clear(); buildSidebar(); buildGrid(); });
-document.getElementById('search').addEventListener('input', buildSidebar);
 
+// ── LAYOUT ──
 document.querySelectorAll('.layout-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    const n = parseInt(btn.dataset.layout);
-    currentLayout = n;
-    document.getElementById('grid').className = `layout-${n}`;
+    document.getElementById('grid').className = `layout-${btn.dataset.layout}`;
     document.querySelectorAll('.layout-btn').forEach(b => b.classList.toggle('active', b === btn));
   });
 });
 
-// Lightbox cerrar
-document.getElementById('lightbox').addEventListener('click', function(e) {
-  if (e.target === this) this.classList.remove('open');
-});
-document.getElementById('lightbox-close').addEventListener('click', () => {
-  document.getElementById('lightbox').classList.remove('open');
-});
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('open');
+// ── REFRESH ──
+function resetCountdown() {
+  clearInterval(countdownTimer);
+  clearTimeout(refreshTimer);
+  refreshSecs = 15;
+  document.getElementById('countdown').textContent = `↻ en ${refreshSecs}s`;
+  countdownTimer = setInterval(() => {
+    refreshSecs--;
+    document.getElementById('countdown').textContent = refreshSecs > 0 ? `↻ en ${refreshSecs}s` : '';
+    if (refreshSecs <= 0) { clearInterval(countdownTimer); }
+  }, 1000);
+  refreshTimer = setTimeout(() => { buildGrid(); resetCountdown(); }, 15000);
+}
+
+document.getElementById('refresh-btn').addEventListener('click', () => {
+  const btn = document.getElementById('refresh-btn');
+  btn.classList.add('spinning');
+  buildGrid();
+  resetCountdown();
+  setTimeout(() => btn.classList.remove('spinning'), 650);
 });
 
-// Auto-refresh cada 60 s
-setInterval(buildGrid, 60000);
+// ── SELECCIÓN TOTAL / NINGUNA ──
+document.getElementById('btn-all').addEventListener('click', () => {
+  cameras.forEach((_,i) => selected.add(i));
+  document.getElementById('selectorRuta').value = '';
+  buildSidebar(); buildGrid();
+});
+document.getElementById('btn-none').addEventListener('click', () => {
+  selected.clear();
+  document.getElementById('selectorRuta').value = '';
+  buildSidebar(); buildGrid();
+});
 
+document.getElementById('search').addEventListener('input', buildSidebar);
+
+// ── LIGHTBOX ──
+function openLightbox(url, name) {
+  document.getElementById('lightbox-img').src = liveUrl(url);
+  document.getElementById('lightbox-name').textContent = name;
+  document.getElementById('lightbox').classList.add('open');
+}
+document.getElementById('lightbox').addEventListener('click', function(e) { if (e.target === this) this.classList.remove('open'); });
+document.getElementById('lightbox-close').addEventListener('click', () => document.getElementById('lightbox').classList.remove('open'));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('open'); });
+
+// ── INIT ──
 buildSidebar();
 buildGrid();
+resetCountdown();
 </script>
 </body>
 </html>
