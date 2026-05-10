@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <title>Tráfico Alicante - Mis Rutas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Tráfico Alicante</h1>
+        <p>Visor de rutas en tiempo real</p>
+    </header>
+
+    <main>
+        <section class="controles">
+            <label for="selectorRuta">Selecciona tu trayecto personalizado:</label>
+            <select id="selectorRuta">
+                <option value="nada">-- Selecciona una ruta --</option>
+                <option value="playa_a_centro">Playa San Juan ➔ Centro</option>
+                <option value="centro_a_universidad">Centro ➔ Vía Parque (Universidad)</option>
+                <option value="acceso_norte">Acceso Norte (Av. Denia)</option>
+                <option value="centro_ciudad">Centro Ciudad (Luceros / Maisonnave)</option>
+            </select>
+            <button id="btnActualizar">Actualizar Ahora</button>
+        </section>
+
+        <section id="visorCamaras" class="cuadricula-camaras">
+            <p class="mensaje-vacio">Elige una ruta en el menú superior para empezar a ver el tráfico.</p>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
